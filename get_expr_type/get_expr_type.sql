@@ -6,6 +6,7 @@
 --  Creation date : 11.11.2019
 --  Last modified : 11.11.2019
 --  Language      : NZPLSQL
+--  Netezza ver.  : 7.2.x
 -- =============================================================================
 --  Description   : Returns the Netezza data type defined for an expression,
 --                : previously created as table T_EXPR_TYPE
@@ -31,7 +32,7 @@ BEGIN
        AND a.schema = 'TEST_NETEZZA_GLUE_TESTER'
        AND b.attnum = 1;
 
-    EXECUTE IMMEDIATE 'DROP TABLE t_expr_type';
+    EXECUTE IMMEDIATE 'DROP TABLE t_expr_type IF EXISTS';
 
     RETURN v_expr_type;
 END;
