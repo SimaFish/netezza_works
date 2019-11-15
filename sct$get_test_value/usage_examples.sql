@@ -483,3 +483,48 @@ SELECT sct$get_test_value('''8927591501257205153''', 'INT8'); --> 89275915012572
 
 --INT8 (type literal II)
 SELECT sct$get_test_value('-12451979813246532', 'INT8'); --> -12451979813246532
+
+--VARBINARY (expression)
+CALL sct$get_test_value('hex_to_binary(''0BDF02998968884239D00198'')', 'VARBINARY(12)'); --> '0BDF02998968884239D00198'
+
+--VARBINARY (type literal I)
+CALL sct$get_test_value('x''''', 'VARBINARY(0)'); --> ''
+
+--VARBINARY (type literal II)
+CALL sct$get_test_value('x''A8409FE548D04DE240DF''', 'VARBINARY(10)'); --> 'A8409FE548D04DE240DF'
+
+--VARBINARY (type literal III)
+CALL sct$get_test_value('''7E22A3DF0023002221006837''', 'VARBINARY(12)'); --> '7E22A3DF00230022210068'
+
+--VARBINARY (type literal IV)
+CALL sct$get_test_value('0030A0E30020A0E30210A0', 'VARBINARY(11)'); --> '0030A0E30020A0E30210A0'
+
+--BINARY VARYING (expression)
+CALL sct$get_test_value('hex_to_binary(''0BDF02998968884239D00198'')', 'BINARY VARYING(12)'); --> '0BDF02998968884239D00198'
+
+--BINARY VARYING (type literal I)
+CALL sct$get_test_value('x''''', 'BINARY VARYING(0)'); --> ''
+
+--BINARY VARYING (type literal II)
+CALL sct$get_test_value('x''A8409FE548D04DE240DF''', 'BINARY VARYING(10)'); --> 'A8409FE548D04DE240DF'
+
+--BINARY VARYING (type literal III)
+CALL sct$get_test_value('''7E22A3DF0023002221006837''', 'BINARY VARYING(12)'); --> '7E22A3DF00230022210068'
+
+--BINARY VARYING (type literal IV)
+CALL sct$get_test_value('0030A0E30020A0E30210A0', 'BINARY VARYING(11)'); --> '0030A0E30020A0E30210A0'
+
+--ST_GEOMETRY (expression)
+CALL sct$get_test_value('hex_to_geometry(''0BDF02998968884239D00198'')', 'ST_GEOMETRY(12)'); --> '0BDF02998968884239D00198'
+
+--ST_GEOMETRY (type literal I)
+CALL sct$get_test_value('x''''', 'ST_GEOMETRY(0)'); --> ''
+
+--ST_GEOMETRY (type literal II)
+CALL sct$get_test_value('x''A8409FE548D04DE240DF''', 'ST_GEOMETRY(10)'); --> 'A8409FE548D04DE240DF'
+
+--ST_GEOMETRY (type literal III)
+CALL sct$get_test_value('''7E22A3DF0023002221006837''', 'ST_GEOMETRY(12)'); --> '7E22A3DF00230022210068'
+
+--ST_GEOMETRY (type literal IV)
+CALL sct$get_test_value('0030A0E30020A0E30210A0', 'ST_GEOMETRY(11)'); --> '0030A0E30020A0E30210A0'

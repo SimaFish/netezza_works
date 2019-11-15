@@ -9,13 +9,6 @@
 -- =============================================================================
 --  Description   : Returns literal representation of evaluated expression,
 --                : casted to a specified data type.
---                : 
---                : Requires `bintohex` function in order to perform binary to
---                : hexadecimal (HEX) data conversion, regarding support of
---                : VARBINARY and ST_GEOMETRY data types.
---                : 
---                : Link: https://www.ibm.com/support/knowledgecenter/en/
---                : SSULQD_7.2.1/com.ibm.nz.udf.doc/r_udf_bin_hex_convert_funcs.html
 -- =============================================================================
 --  Parameters    : > $1 argument (p_expression):
 --                : Expression, to evaluate and cast to a specified data type.
@@ -33,6 +26,7 @@ BEGIN_PROC
 DECLARE
     p_expression ALIAS FOR $1;
     p_datatype ALIAS FOR $2;
+    v_hex_conv_func VARCHAR;
     v_expression VARCHAR;
     v_typed_expr VARCHAR;
     v_test_val VARCHAR;
@@ -49,7 +43,7 @@ BEGIN
     /* Extracting data type name (without precision,scale) */
     v_dtype_name := CASE
                        WHEN instr(v_datatype, '(') = 0 THEN v_datatype
-                       ELSE rtrim(substr(v_datatype, 1, instr(v_datatype, '(') - 1))
+                       ELSE substr(v_datatype, 1, instr(v_datatype, '(') - 1)
                     END;
     v_typed_expr := 'CAST(' || v_expression || ' AS ' || v_datatype || ')';
 
@@ -58,14 +52,22 @@ BEGIN
     EXCEPTION
         WHEN OTHERS THEN
         /* Constructing the new type expression from modified literal */
-        v_typed_expr := CASE
-                           WHEN v_dtype_name IN ('VARBINARY', 'ST_GEOMETRY')
-                           THEN CASE instr(v_expression, '''')
-                                   WHEN 1 THEN 'hex_to_binary(' || v_expression || ')'
-                                   ELSE 'hex_to_binary(''' || v_expression || ''')'
-                                END
-                           ELSE 'CAST(''' || v_expression || ''' AS ' || v_datatype || ')'
-                        END;
+        IF v_dtype_name IN ('VARBINARY', 'BINARY VARYING', 'ST_GEOMETRY')
+        THEN
+            v_expression := substr(v_expression, instr(v_expression, 'x''') + 1);
+            /* Determining func to convert HEX data */
+            v_hex_conv_func := CASE v_dtype_name
+                                  WHEN 'ST_GEOMETRY' THEN 'hex_to_geometry'
+                                  ELSE 'hex_to_binary'
+                               END;
+
+            v_typed_expr := CASE instr(v_expression, '''')
+                               WHEN 1 THEN v_hex_conv_func || '(' || v_expression || ')'
+                               ELSE v_hex_conv_func || '(''' || v_expression || ''')'
+                            END;
+        ELSE
+            v_typed_expr := 'CAST(''' || v_expression || ''' AS ' || v_datatype || ')';
+        END IF;
     END;
 
     IF UPPER(v_expression) = 'NULL'
@@ -123,10 +125,10 @@ BEGIN
                                 'ELSE test_expr ' ||
                              'END AS test_val ' ||
                        'FROM vw_time_tz';
-    /* VARBINARY, ST_GEOMETRY */
-    ELSEIF v_dtype_name IN ('VARBINARY', 'ST_GEOMETRY')
+    /* VARBINARY, BINARY VARYING, ST_GEOMETRY */
+    ELSEIF v_dtype_name IN ('VARBINARY', 'BINARY VARYING', 'ST_GEOMETRY')
     THEN
-        v_sql_text := NULL; /* require `bintohex` function */
+        v_sql_text := 'SELECT to_hex(' || v_typed_expr || ') AS test_val';
     END IF;
 
     IF v_sql_text IS NOT NULL
