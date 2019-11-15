@@ -142,7 +142,7 @@ BEGIN
     RETURN v_test_val;
 EXCEPTION
     WHEN OTHERS THEN
-    --Explain the error details when occured
+    /* Explain the error details when occured */
     RAISE NOTICE 'Error: %', SQLERRM;
     RAISE NOTICE 'SQLText: %', v_sql_text;
 END;
