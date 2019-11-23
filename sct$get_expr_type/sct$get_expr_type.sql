@@ -2,9 +2,9 @@
 --  Procedure     : sct$get_expr_type
 -- =============================================================================
 --  Author        : Andriy (Andrii) Oseledko
---  Version       : 1.0
+--  Version       : 1.1
 --  Creation date : 15.11.2019
---  Last modified : 15.11.2019
+--  Last modified : 23.11.2019
 --  Language      : NZPLSQL
 --  Netezza ver.  : 7.2.x
 -- =============================================================================
@@ -35,6 +35,7 @@ BEGIN
       INTO v_expr_type
       FROM _v_relation_column
      WHERE name = 'T_SCT$EXPR_TYPE$TABLE'
+       AND schema = CURRENT_SCHEMA
        AND owner = CURRENT_USER
        AND attnum = 1;
 
@@ -62,3 +63,4 @@ EXCEPTION
     RETURN NULL;
 END;
 END_PROC;
+/
