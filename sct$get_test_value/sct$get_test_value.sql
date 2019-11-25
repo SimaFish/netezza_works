@@ -2,9 +2,9 @@
 --  Procedure     : sct$get_test_value
 -- =============================================================================
 --  Author        : Andriy (Andrii) Oseledko
---  Version       : 1.0
+--  Version       : 1.1
 --  Creation date : 12.11.2019
---  Last modified : 12.11.2019
+--  Last modified : 25.11.2019
 --  Language      : NZPLSQL
 -- =============================================================================
 --  Description   : Returns literal representation of evaluated expression,
@@ -77,8 +77,11 @@ BEGIN
     ELSEIF v_dtype_name IN ('BOOL', 'BOOLEAN')
     THEN
         v_sql_text := 'SELECT CASE ' ||
-                                'WHEN ' || v_typed_expr || ' THEN ''TRUE'' ' ||
-                                'ELSE ''FALSE'' ' ||
+                                'WHEN ' || v_typed_expr || ' IS NULL THEN ''NULL''' ||
+                                'ELSE CASE ' ||
+                                        'WHEN ' || v_typed_expr || ' THEN ''TRUE'' ' ||
+                                        'ELSE ''FALSE'' ' ||
+                                     'END ' ||
                              'END AS test_val';
     /* [N]CHAR[ACTER], [NATIONAL ]CHAR[ACTER],
        [N]VARCHAR, [NATIONAL ]CHAR[ACTER] [VARYING] */
@@ -142,7 +145,7 @@ BEGIN
     RETURN v_test_val;
 EXCEPTION
     WHEN OTHERS THEN
-    /* Explain the error details when occured */
+    --Explain the error details when occured
     RAISE NOTICE 'Error: %', SQLERRM;
     RAISE NOTICE 'SQLText: %', v_sql_text;
 END;
